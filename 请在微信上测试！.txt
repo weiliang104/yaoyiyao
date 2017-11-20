@@ -1,0 +1,107 @@
+请在微信上测试！<img src="image/shake.jpg" width="300" height="300">
+#pro 
+
+
+
+
+<?php 
+$openid = $_GET['openid'];
+echo "<script> var openid=\"$openid\"</script>";//传递给javascript
+?>
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>手机摇一摇</title>
+<style type="text/css">
+    body{ background: #292D2E;}
+.demo{width:320px; margin:20px auto 0 auto; }
+#pro{width: 300px; height: 500px; margin:0 auto;text-align:center;}
+    #pro a{text-decoration:none;border:1px solid red;color:green;}
+   
+     .hand { width: 190px; height: 300px; background: url(hand.png) no-repeat; position: absolute; top: 50px; left: 50%; margin-left: -95px; }
+    .hand-animate { -webkit-animation: hand_move infinite 2s; }
+        @-webkit-keyframes hand_move {
+        0% {
+            -webkit-transform: rotate(0);
+               -moz-transform: rotate(0);
+                -ms-transform: rotate(0);
+                 -o-transform: rotate(0);
+                    transform: rotate(0); }
+        50% {
+            -webkit-transform: rotate(15deg);
+               -moz-transform: rotate(15deg);
+                -ms-transform: rotate(15deg);
+                 -o-transform: rotate(15deg);
+                    transform: rotate(15deg); }
+        100% {
+            -webkit-transform: rotate(0);
+               -moz-transform: rotate(0);
+                -ms-transform: rotate(0);
+                 -o-transform: rotate(0);
+                    transform: rotate(0); }
+    }
+</style>
+</head>
+
+<body>
+
+<div id="main">
+  
+   <div class="demo">
+		<div id="pro" rel="1"></div>
+   </div>
+  
+  <br/>
+</div>
+<script type="text/javascript" src="http://libs.baidu.com/jquery/1.7.2/jquery.min.js"></script>
+<script src="shake.js"></script>
+<script>
+    var color = new Array('#551A8B', '#CD2626', '#CD69C9', '#ADFF2F', '#7FFFD4', '#ADADAD','#EED8AE','#EEE685','#FFF0F5','#CD9B1D');  
+if ((navigator.userAgent.match(/(iPhone|iPod|Android|ios|iOS|iPad|Backerry|WebOS|Symbian|Windows Phone|Phone)/i))){ 
+	
+    $("#pro").html('<p>使劲晃动您的手机</p><div id="hand" class="hand hand-animate"></div>');
+}else{alert("f");
+	$("#pro").html('<img src="images/qrcode.png" width="190" height="190"><p>请用手机打开该页面！</p>');
+}
+
+window.onload = function() {
+    var myShakeEvent = new Shake({
+        threshold: 12
+    });
+
+    myShakeEvent.start();
+
+    window.addEventListener('shake', shakeEventDidOccur, false);
+
+    function shakeEventDidOccur () {
+		var pro_id = $("#pro").attr("rel");
+         document.body.style.backgroundColor = color[Math.round(Math.random()*10)%10];
+       //alert("4545");
+		$.getJSON("shakeresult.php?id="+pro_id,function(json){
+		if(json.msg==1){
+           
+				$("#pro").attr("rel",json.pro.id).
+                html('<img src="'+json.pro.pic+
+                     '" width="300" height="350"><p>书名：'+json.pro.bookname+
+                     '</p><p>联系方式：'+json.pro.phonenum+
+                     '</p><p>持有者：'+json.pro.bookMaster+
+                     '</p><a href="book_OneShow.php?bookOpenID='+
+                     json.pro.bookOpenID+'&isbn='+
+                     json.pro.isbn+'&openid='+openid+
+                     '">我想借</a><br><br><img id="img" src="image/location1.png"><a href="http://1.2879988040.applinzi.com/location.php">定位</a>');
+            }else{
+				alert(json.msg);
+			}
+		});
+    }
+};
+
+
+</script>
+
+<div id="footer">
+</div>
+</body>
+</html>
